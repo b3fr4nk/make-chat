@@ -27,6 +27,10 @@ $(document).ready(()=>{
       $('#chat-input').val('');
     }
   });
+
+  // Get the online users from the server
+  socket.emit('get online users');
+
   // socket listeners
   socket.on('new user', (username) => {
     console.log(`${username} has joined the chat`);
@@ -40,5 +44,22 @@ $(document).ready(()=>{
       <p class="message-text">${data.message}</p>
     </div>
   `);
+  });
+  socket.on('get online users', (onlineUsers) => {
+  // Our usernames are keys in the object of onlineUsers.
+    for (username in onlineUsers) {
+      if (username != '') {
+        $('.users-online').append(`<div class="user-online">${username}</div>`);
+      }
+    }
+  });
+  // Refresh the online user list
+  socket.on('user has left', (onlineUsers) => {
+    $('.users-online').empty();
+    for (username in onlineUsers) {
+      if (username != '') {
+        $('.users-online').append(`<p>${username}</p>`);
+      }
+    }
   });
 });
